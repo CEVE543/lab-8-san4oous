@@ -1,7 +1,7 @@
 ---
 title: "CEVE 543 Fall 2025 Lab 8: Weather Typing Implementation"
 subtitle: "K-means clustering for synoptic pattern classification"
-author: CEVE 543 Fall 2025
+author: Alisa Sannikova
 date: "2025-10-31"
 type: "lab"
 module: 2
@@ -574,8 +574,17 @@ Answer the following questions about the weather typing methodology:
 ### Implementation Questions
 
 - Explain in your own words what the `assign_to_nearest_centroid` function does and why it's important for k-means clustering.
+
+We are trying to understand to which weather type out data point is adjacent. 
+
 - Explain in your own words what the `update_centroids` function does and why it's important for k-means clustering.
+
+We are figuring out what is the actual mean of the claster so we can have a mean value of the weather type. 
+
 - Why does k-means use squared Euclidean distance rather than absolute distance? What would happen if you used absolute distance instead?
+
+It better represents a minimum distance between two points.
+
 
 ### Weather Typing Analysis
 

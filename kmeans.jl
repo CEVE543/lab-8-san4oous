@@ -53,18 +53,33 @@ Currently assigns points randomly. You need to:
 2. Assign each point to its nearest centroid
 """
 function assign_to_nearest_centroid(data::Matrix{T}, centroids::Matrix{T}) where {T<:AbstractFloat}
-    n_samples = size(data, 1)
-    k = size(centroids, 1)
-    labels = zeros(Int, n_samples)
+    n_samples = size(data, 1)      # number of data points
+    k         = size(centroids, 1) # number of centroids
+    labels    = zeros(Int, n_samples)
 
     for i in 1:n_samples
-        # TODO: Fix this - should compute distances and find nearest
-        # Currently just assigns randomly
-        labels[i] = rand(1:k)
+        x = @view data[i, :]       # i-th data point
+
+        best_label = 1
+        best_dist  = Inf
+
+        # compute squared Euclidean distance to each centroid
+        for j in 1:k
+            c = @view centroids[j, :]
+            dist = sum((x .- c).^2)   # squared Euclidean distance
+
+            if dist < best_dist
+                best_dist  = dist
+                best_label = j
+            end
+        end
+
+        labels[i] = best_label
     end
 
     return labels
 end
+
 
 """
     update_centroids(data::Matrix{T}, labels::Vector{Int}, k::Int) where {T<:AbstractFloat}
@@ -81,18 +96,20 @@ Hint: If a cluster is empty, leave its centroid unchanged.
 """
 function update_centroids(data::Matrix{T}, labels::Vector{Int}, k::Int) where {T<:AbstractFloat}
     n_features = size(data, 2)
-    centroids = zeros(T, k, n_features)
+    centroids  = zeros(T, k, n_features)
 
     for cluster in 1:k
-        # Find points in this cluster
-        cluster_mask = labels .== cluster
+        # 1. Find points in this cluster
+        cluster_mask   = labels .== cluster
         cluster_points = data[cluster_mask, :]
 
-        if size(cluster_points, 1) > 0
-            # TODO: Fix this - should compute mean of all cluster points
-            # Currently just picks a random point from the cluster
-            random_idx = rand(1:size(cluster_points, 1))
-            centroids[cluster, :] = cluster_points[random_idx, :]
+        # 2. If the cluster is non-empty, compute the mean and use it
+        if !isempty(cluster_points)
+            # mean over rows (points), keep as row vector
+            centroids[cluster, :] = vec(mean(cluster_points, dims = 1))
+        else
+            # 3. If empty, leave centroid as is (here it stays whatever it was initialized to)
+            # (no assignment needed)
         end
     end
 
